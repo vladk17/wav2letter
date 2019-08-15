@@ -59,7 +59,7 @@ jobs:
             sudo docker exec -it wav2letter bash -c "\
             git clone --recursive https://github.com/facebookresearch/flashlight.git && \
             cd flashlight && mkdir -p build && cd build && \
-            cmake .. -DFLASHLIGHT_BACKEND=CUDA -DFL_BUILD_CONTRIB=ON -DFL_BUILD_TESTS=OFF -DFL_BUILD_EXAMPLES=OFF && \
+            cmake .. -DCMAKE_BUILD_TYPE=Debug -DFLASHLIGHT_BACKEND=CUDA -DFL_BUILD_CONTRIB=ON -DFL_BUILD_TESTS=OFF -DFL_BUILD_EXAMPLES=OFF && \
             make install -j$(proc) && \
             export MKLROOT=/opt/intel/mkl && export KENLM_ROOT_DIR=/root/kenlm && \
             cd /wav2letter && mkdir -p build && cd build && \
@@ -76,12 +76,12 @@ jobs:
             export MKLROOT=/opt/intel/mkl && mkdir -p build && cd build
             cd /root && git clone --recursive https://github.com/facebookresearch/flashlight.git && \
             cd flashlight && mkdir -p build && cd build && \
-            cmake .. -DCMAKE_BUILD_TYPE=Release -DFLASHLIGHT_BACKEND=CPU && \
-            make && make install
+            cmake .. -DCMAKE_BUILD_TYPE=Debug -DFLASHLIGHT_BACKEND=CPU -DFL_BUILD_CONTRIB=ON -DFL_BUILD_TESTS=OFF -DFL_BUILD_EXAMPLES=OFF && \
+            make install
             export KENLM_ROOT_DIR=/root/kenlm && \
             cd /root/project && mkdir -p build && \
             cd build && cmake .. -DCMAKE_BUILD_TYPE=Release -DW2L_LIBRARIES_USE_CUDA=OFF && \
-            make
+            make -j$(nproc)
 workflows:
   version: 2
   build_and_install:
