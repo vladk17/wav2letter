@@ -72,6 +72,8 @@ jobs:
       - checkout
       - run:
           name: Build wav2letter with CPU backend
+          # Tests and examples are built in the CUDA backend workflow, and since we're not running CPU tests anyways, ignore
+          # and only build core library components (e.g. CPU criterion, etc)
           command: |
             export MKLROOT=/opt/intel/mkl && mkdir -p build && cd build
             cd /root && git clone --recursive https://github.com/facebookresearch/flashlight.git && \
@@ -79,9 +81,9 @@ jobs:
             cmake .. -DCMAKE_BUILD_TYPE=Debug -DFLASHLIGHT_BACKEND=CPU -DFL_BUILD_CONTRIB=ON -DFL_BUILD_TESTS=OFF -DFL_BUILD_EXAMPLES=OFF && \
             make install
             export KENLM_ROOT_DIR=/root/kenlm && \
-            cd /root/project && mkdir -p build && \
-            cd build && cmake .. -DCMAKE_BUILD_TYPE=Release -DW2L_LIBRARIES_USE_CUDA=OFF && \
-            make -j$(nproc)
+            cd /root/project && mkdir -p build && cd build && \
+            cmake .. -DCMAKE_BUILD_TYPE=Debug -DW2L_LIBRARIES_USE_CUDA=OFF -DW2L_BUILD_EXAMPLES=OFF -DW2L_BUILD_TESTS=OFF && \
+            make
 workflows:
   version: 2
   build_and_install:
